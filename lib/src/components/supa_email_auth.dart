@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:supabase_auth_ui/src/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
 /// Information about the metadata to pass to the signup form
 ///
 /// You can use this object to create additional fields that will be passed to the metadata of the user upon signup.
-/// For example, in order to create additional `username` field, you can use the following:
+/// For example, in order to create additional `
+/// username` field, you can use the following:
 /// ```dart
 /// MetaDataField(label: 'Username', key: 'username')
 /// ```
@@ -147,8 +149,8 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
             spacer(16),
             TextFormField(
               validator: (value) {
-                if (value == null || value.isEmpty || value.length < 6) {
-                  return 'Please enter a password that is at least 6 characters long';
+                if (value == null || value.isEmpty || value.length < 8) {
+                  return 'Please enter a password that is at least 8 characters long';
                 }
                 return null;
               },
@@ -200,7 +202,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                     );
                     widget.onSignInComplete.call(response);
                   } else {
-                    final response = await supabase.auth.signUp(
+                     final response = await supabase.auth.signUp(
                       email: _emailController.text.trim(),
                       password: _passwordController.text.trim(),
                       emailRedirectTo: widget.redirectTo,
@@ -210,7 +212,36 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                               (metaDataField, controller) =>
                                   MapEntry(metaDataField.key, controller.text)),
                     );
+
+
+                await supabase.from('auth_users').upsert([
+                      {
+                        'id': response.user!.id,
+                        'email': _emailController.text.trim(),
+                        'password': _passwordController.text.trim(),
+                        'mobile_number': _metadataControllers['mobile']?.text.trim(),
+                      },
+                    ]);
+
+
                     widget.onSignUpComplete.call(response);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Verify your email'),
+                          content: Text('Check your mail'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   }
                 } on AuthException catch (error) {
                   if (widget.onError == null) {
@@ -233,6 +264,8 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                 }
               },
             ),
+
+
             spacer(16),
             if (_isSigningIn) ...[
               TextButton(

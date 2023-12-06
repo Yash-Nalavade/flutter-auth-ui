@@ -14,6 +14,8 @@ dependencies:
   supabase_flutter: ^1.4.0
   email_validator: ^2.0.1
   font_awesome_flutter: ^10.0.0
+  webview_flutter: ^4.4.0
+  supabase: ^1.11.11
 
 dev_dependencies:
   flutter_test:
@@ -21,5 +23,8 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 
 flutter:
+  uses-material-design: true
   assets:
     - assets/logos/google_light.png
+    - assets/logos/dyplg.jpg
+
